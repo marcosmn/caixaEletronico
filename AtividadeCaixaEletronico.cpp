@@ -7,32 +7,41 @@
 #include <stdlib.h>
 #include <stdexcept>
 
+// Variaveis globais
+int codigoAtual;
+
 // Lista de usuarios
 typedef struct
 {
 	char usuario[15];
+	char senha[15];
+	int saldo = 0;
 } Usuario;
+
+// Para testar
+const int quantidadeContas = 3;
+Usuario listaUsuarios[quantidadeContas];
 
 // Declaração da função para acessar a conta
 bool acessarConta();
 
 // Declaração da função para verificar a senha
-bool verificarSenha(int codigo, char senha[15]);
+bool verificarSenha(char senhaAtual[15]);
 
 // Declaração da função para verificar saldo
-bool verificarSaldo(char usuario[15]);
+void verificarSaldo();
 
 // Declaração da função para saque
-bool fazerSaque(char usuario[15]);
+void fazerSaque(int quantidadeRetirada);
 
 // Declaração da função para deposito na propria conta
-bool depositoInterno(char usuario[15]);
+void depositoInterno(int quantidadeDepositada);
 
 // Declaração da função para deposito em outra conta
-bool depositoExterno(char usuario[15]);
+void depositoExterno(char usuarioExterno[15], int quantidadeDepositada);
 
 // Declaração da função para pagamento
-bool fazerPagamento(char usuario[15]);
+bool fazerPagamento(int quantidadePagada);
 
 // Loop Inicial (Menu)
 int main()
@@ -48,14 +57,14 @@ int main()
 	// Acesso a conta
 	printf("Acesse a sua conta,\n");
 	sucesso = acessarConta();
-	while(sucesso == false)
+	while (sucesso == false)
 	{
 		printf("Tente novamente,\n");
 		sucesso = acessarConta();
 	}
 
 	// Operações
-	while(fim == false)
+	while (fim == false)
 	{
 		printf("Lista de operações: \n");
 		printf("0 - Encerrar\n");
@@ -65,69 +74,92 @@ int main()
 		printf("4 - Fazer deposito em outra conta \n");
 		printf("5 - Fazer pagamento \n");
 		printf("Escolha a sua operação:");
-		scanf("%i", &operacao);
+		scanf_s("%i", &operacao);
 
 		// Encerrar
-		if(operacao == 0)
+		if (operacao == 0)
 		{
-
+			fim = true;
 		}
 
 		// Verificar Saldo
-		if(operacao == 1)
+		else if (operacao == 1)
 		{
-
+			verificarSaldo();
 		}
 
 		// Fazer saque
-		if(operacao == 2)
+		else if (operacao == 2)
 		{
-
+			int quantidadeRetirada = 0;
+			printf("Quanto você quer sacar: ");
+			scanf_s("%i", &quantidadeRetirada);
+			fazerSaque(quantidadeRetirada);
 		}
 
 		// Fazer deposito na propria conta
-		if(operacao == 3)
+		else if (operacao == 3)
 		{
-
+			int quantidadeDepositada = 0;
+			printf("Quanto você quer depositar: ");
+			scanf_s("%i", &quantidadeDepositada);
+			depositoInterno(quantidadeDepositada);
 		}
 
 		// Fazer deposito em outra conta
-		if(operacao == 4)
+		else if (operacao == 4)
 		{
-
+			char usuarioExterno[15];
+			printf("Informe o usuario alvo: ");
+			scanf_s("%s", &usuarioExterno, 15);
+			int quantidadeDepositada = 0;
+			printf("Quanto você quer depositar: ");
+			scanf_s("%i", &quantidadeDepositada);
+			depositoExterno(usuarioExterno, quantidadeDepositada);
 		}
 
 		// Fazer pagamento
-		if(operacao == 5)
+		else if (operacao == 5)
 		{
-
+			int quantidadePagada = 0;
+			printf("Quanto você quer pagar: ");
+			scanf_s("%i", &quantidadePagada);
+			fazerPagamento(quantidadePagada);
 		}
 	}
+
+	// Fim do caixa
+	printf("Volte sempre ao caixa eletronico!");
+
+	return 0;
 }
 
 // Função para acessar a conta
 bool acessarConta()
 {
-	const int quantidadeContas = 3;
-	Usuario listaUsuarios[quantidadeContas];
-	strcpy(listaUsuarios[1].usuario,"visitante");
-	strcpy(listaUsuarios[2].usuario, "admin");
+	// Para testar
+	strcpy_s(listaUsuarios[1].usuario, "visitante");
+	strcpy_s(listaUsuarios[1].senha, "1234");
+	strcpy_s(listaUsuarios[2].usuario, "admin");
+	strcpy_s(listaUsuarios[2].senha, "7777");
 
-	char usuario[15];
+	// Leitura do usuario
+	char usuarioAtual[15];
 	printf("digite o usuario:");
-	scanf("%s", &usuario);
+	scanf_s("%s", &usuarioAtual, 15);
 
-	char senha[15];
+	// Leitura da senha
+	char senhaAtual[15];
 	printf("digite a senha:");
-	scanf("%s", &senha);
+	scanf_s("%s", &senhaAtual, 15);
 
 	// Verificar usuario
-	for(int codigo = 0; codigo < quantidadeContas; codigo++)
+	for (codigoAtual = 0; codigoAtual < quantidadeContas; codigoAtual++)
 	{
-		if(strcmp(usuario, listaUsuarios[codigo].usuario))
+		if (strcmp(usuarioAtual, listaUsuarios[codigoAtual].usuario))
 		{
 			// Verificar senha correspondente
-			return verificarSenha(codigo, senha);
+			return verificarSenha(senhaAtual);
 		}
 	}
 
@@ -135,37 +167,57 @@ bool acessarConta()
 }
 
 // Função para verificar a senha
-bool acessarConta()
+bool verificarSenha(char senhaAtual[15])
 {
+	if (strcmp(senhaAtual, listaUsuarios[codigoAtual].senha))
+	{
+		return true;
+	}
 
+	return false;
 }
 
 // Função para verificar saldo
-bool acessarConta()
+void verificarSaldo()
 {
-
+	printf("Saldo atual: %i", listaUsuarios[codigoAtual].saldo);
 }
 
 // Função para saque
-bool acessarConta()
+void fazerSaque(int quantidadeRetirada)
 {
-
+	listaUsuarios[codigoAtual].saldo = listaUsuarios[codigoAtual].saldo - quantidadeRetirada;
 }
 
 // Função para deposito na propria conta
-bool acessarConta()
+void depositoInterno(int quantidadeDepositada)
 {
-
+	listaUsuarios[codigoAtual].saldo = listaUsuarios[codigoAtual].saldo + quantidadeDepositada;
 }
 
 // Função para deposito em outra conta
-bool acessarConta()
+void depositoExterno(char usuarioExterno[15], int quantidadeDepositada)
 {
-
+	for (int codigoExterno = 0; codigoExterno < quantidadeContas; codigoExterno++)
+	{
+		if (strcmp(usuarioExterno, listaUsuarios[codigoExterno].usuario))
+		{
+			listaUsuarios[codigoExterno].saldo = listaUsuarios[codigoExterno].saldo + quantidadeDepositada;
+		}
+	}
 }
 
 // Função para pagamento
-bool acessarConta()
+bool fazerPagamento(int quantidadePagada)
 {
+	// Verificando se é possivel pagar a quantidade
+	if (quantidadePagada < listaUsuarios[codigoAtual].saldo)
+	{
+		listaUsuarios[codigoAtual].saldo = listaUsuarios[codigoAtual].saldo - quantidadePagada;
 
+		return true;
+	}
+
+	return false;
 }
+
